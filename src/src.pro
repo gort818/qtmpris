@@ -1,11 +1,12 @@
 include(../common.pri)
 
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += qt link_pkgconfig \
+            staticlib
 
 QT = core dbus qml
 
-PKGCONFIG = dbusextended-qt5
+#PKGCONFIG = dbusextended-qt5
 TARGET = $${MPRISQTLIB}
 
 QMAKE_SUBSTITUTES = $${TARGET}.prf.in
@@ -58,8 +59,21 @@ prf.files = $${TARGET}.prf
 prf.path = $$[QMAKE_MKSPECS]/features
 INSTALLS += target headers prf
 
-QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus dbusextended-qt5
+QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus #dbusextended-qt5
 QMAKE_PKGCONFIG_LIBDIR = $$target.path
 QMAKE_PKGCONFIG_INCDIR = $$headers.path
 QMAKE_PKGCONFIG_DESTDIR = pkgconfig
 QMAKE_PKGCONFIG_NAME = MprisQt
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../qtdbusextended/src/release/ -ldbusextended-qt5
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../qtdbusextended/src/debug/ -ldbusextended-qt5
+else:unix: LIBS += -L$$OUT_PWD/../../qtdbusextended/src/ -ldbusextended-qt5
+
+INCLUDEPATH += $$PWD/../../qtdbusextended/src
+DEPENDPATH += $$PWD/../../qtdbusextended/src
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtdbusextended/src/release/libdbusextended-qt5.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtdbusextended/src/debug/libdbusextended-qt5.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtdbusextended/src/release/dbusextended-qt5.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtdbusextended/src/debug/dbusextended-qt5.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../qtdbusextended/src/libdbusextended-qt5.a
