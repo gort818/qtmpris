@@ -1,7 +1,7 @@
 include(../common.pri)
 
 TEMPLATE = lib
-CONFIG += qt link_pkgconfig
+CONFIG += staticlib
 
 QT = core dbus qml
 
